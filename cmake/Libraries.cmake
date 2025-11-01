@@ -32,12 +32,27 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/nothings/stb.git
     GIT_TAG master
 )
-FetchContent_MakeAvailable(stb)
 
+FetchContent_GetProperties(stb)
+if (NOT stb_POPULATED)
+    FetchContent_MakeAvailable(stb)
+    add_library(stb INTERFACE)
+    target_include_directories(stb INTERFACE ${stb_SOURCE_DIR})
+endif()
+
+
+FetchContent_Declare(
+    eigen
+    GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+    GIT_TAG master
+)
+FetchContent_MakeAvailable(eigen)
 
 target_link_libraries(${EXE_FILE} PRIVATE
     glad
     glfw
     glm
     tinygltf
+    stb
+    eigen
 )

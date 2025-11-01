@@ -5,6 +5,8 @@
 #include "Block.h"
 
 #include "Chunk.h"
+#include "glm/vec2.hpp"
+#include <Eigen/Dense>
 constexpr float frontFace[] = {
         -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
@@ -47,6 +49,8 @@ constexpr float frontFace[] = {
      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
     -0.5f,  0.5f,  0.5f,  0.0f, 0.0f
     };
+
+
 void Block::appendFacesVerticesAndIndices(glMeshData &to, glm::uvec3 direction) {
     std::vector<float> vertices ;
     if (direction.x == 1) {

@@ -21,7 +21,7 @@
     return deltaMousePosition;
 }
 void Camera::processInput(GLFWwindow* window) {
-  const float cameraSpeed = 0.05f;
+  const float cameraSpeed = 0.2f;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         position += glm::normalize( front) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
