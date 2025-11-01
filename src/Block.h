@@ -10,13 +10,13 @@
 
 class Chunk;
 class Block {
-    glm::uvec3 position;
+    glm::ivec3 position;
     bool air;
 public:
     [[nodiscard]]bool isAir() const {
         return air;
     }
-    void setProps(const glm::uvec3 &position, const bool air) {
+    void setProps(const glm::ivec3 &position, const bool air) {
         this->position = position;
         this->air = air;
     }

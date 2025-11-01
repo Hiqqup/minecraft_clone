@@ -2,7 +2,7 @@
 // Created by ju on 10/31/25.
 //
 
-#include "Mesh.h"
+#include "ChunkMesh.h"
 
 #include <cstring>
 #include <random>
@@ -23,9 +23,9 @@ GLuint createBuffer(GLuint bufferType, const std::vector<T> &bufferData) {
     return buffer;
 }
 
-Chunk chunk;
 
-Mesh::Mesh():
+ChunkMesh::ChunkMesh(glm::ivec2 chunkPosition):
+    chunk(chunkPosition),
     VBO (createBuffer( GL_ARRAY_BUFFER,chunk.data.vertices)),
     EBO ((createBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.data.indices))),
     numberOfIndices(chunk.data.indices.size())
@@ -34,21 +34,24 @@ Mesh::Mesh():
     glBindVertexArray(VAO);
 
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) 0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)( 3* sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)( 3* sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)( 5* sizeof(float)));
+    glEnableVertexAttribArray(2);
 }
 
-void Mesh::draw() const {
+void ChunkMesh::draw() const {
 
         glBindVertexArray(VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glDrawElements(GL_TRIANGLES, numberOfIndices, GL_UNSIGNED_INT, nullptr);
 }
 
-Mesh::~Mesh() {
+ChunkMesh::~ChunkMesh() {
     glDeleteBuffers(1, &EBO);
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);

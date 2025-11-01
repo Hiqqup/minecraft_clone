@@ -7,7 +7,7 @@
 
 #include "Assets.h"
 
-#include "Mesh.h"
+#include "ChunkMesh.h"
 #include "Shader.h"
 #include "WindowManager.h"
 #include "Camera.h"
@@ -34,7 +34,10 @@ int main() {
 
     Shader* shader =new Shader("shaders/triangle.vert", "shaders/triangle.frag");
     shader->use();
-    Mesh* mesh =new Mesh();
+    ChunkMesh* mesh = new ChunkMesh({0,1});
+
+
+
     Camera camera;
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

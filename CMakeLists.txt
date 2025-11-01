@@ -10,8 +10,8 @@ add_executable(${EXE_FILE}
         src/main.cpp
         src/WindowManager.cpp
         src/Shader.cpp
-        src/Mesh.cpp
-        src/Mesh.h
+        src/ChunkMesh.cpp
+        src/ChunkMesh.h
         src/Camera.cpp
         src/Camera.h
         src/Chunk.cpp
@@ -19,6 +19,8 @@ add_executable(${EXE_FILE}
         src/Block.cpp
         src/Block.h
         src/ChunkMeshDataStruct.h
+        src/ChunkMeshRenderDistance.cpp
+        src/ChunkMeshRenderDistance.h
 )
 
 include(cmake/Libraries.cmake)

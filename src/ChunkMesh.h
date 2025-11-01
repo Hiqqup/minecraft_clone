@@ -5,17 +5,21 @@
 #pragma once
 #include <vector>
 
+#include "Chunk.h"
 
-class Mesh {
 
+class ChunkMesh {
 
+public:
+    Chunk chunk;
+private:
     unsigned int VBO;
     unsigned int VAO;
     unsigned int EBO;
     int numberOfIndices;
 public:
-    Mesh();
+    ChunkMesh(glm::ivec2 chunkPosition);
     void draw()const;
-    ~Mesh();
+    ~ChunkMesh();
 
 };
