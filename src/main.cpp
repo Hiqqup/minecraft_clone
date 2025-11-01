@@ -13,6 +13,7 @@
 #include "WindowManager.h"
 #include "Camera.h"
 #include "tiny_gltf.h"
+#include "World.h"
 
 
 glm::mat4 calculateMvpMatrix(const Camera & camera) {
@@ -28,34 +29,6 @@ glm::mat4 calculateMvpMatrix(const Camera & camera) {
 
     return projection * view * model;
 }
-
-class ChunkMeshRenderDistance {
-    static constexpr glm::uvec2 RENDER_DISTANCE = glm::uvec2(8, 8);
-    ChunkMesh* chunks[RENDER_DISTANCE.x][RENDER_DISTANCE.y];
-public:
-    ChunkMeshRenderDistance() {
-        for (int x = 0; x < RENDER_DISTANCE.x; x++) {
-            for (int y = 0; y < RENDER_DISTANCE.y; y++) {
-                chunks[x][y] = new ChunkMesh(glm::ivec2{x,y});
-            }
-        }
-    }
-    void draw()const {
-        for (int x = 0; x < RENDER_DISTANCE.x; x++) {
-            for (int y = 0; y < RENDER_DISTANCE.y; y++) {
-                chunks[x][y]->draw();
-            }
-        }
-    }
-    ~ChunkMeshRenderDistance() {
-        for (int x = 0; x < RENDER_DISTANCE.x; x++) {
-            for (int y = 0; y < RENDER_DISTANCE.y; y++) {
-                delete chunks[x][y];
-            }
-        }
-
-    }
-};
 
 int main() {
     GLFWwindow *window = WindowManager::openWindow();
@@ -84,7 +57,7 @@ int main() {
     auto  shader = std::make_optional<Shader>("shaders/triangle.vert", "shaders/triangle.frag");
     shader->use();
     //auto mesh = std::make_optional<ChunkMesh>(glm::ivec2{0,0});
-    auto meshes = std::make_optional<ChunkMeshRenderDistance>();
+    auto meshes = std::make_optional<World>();
     Camera camera;
 
 

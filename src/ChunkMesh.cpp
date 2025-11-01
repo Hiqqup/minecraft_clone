@@ -24,8 +24,8 @@ GLuint createBuffer(GLuint bufferType, const std::vector<T> &bufferData) {
 }
 
 
-ChunkMesh::ChunkMesh(glm::ivec2 chunkPosition):
-    chunk(chunkPosition),
+ChunkMesh::ChunkMesh(const Chunk & chunk):
+    VAO(),
     VBO (createBuffer( GL_ARRAY_BUFFER,chunk.data.vertices)),
     EBO ((createBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.data.indices))),
     numberOfIndices(chunk.data.indices.size())

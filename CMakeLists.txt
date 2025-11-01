@@ -19,8 +19,8 @@ add_executable(${EXE_FILE}
         src/Block.cpp
         src/Block.h
         src/ChunkMeshDataStruct.h
-        src/ChunkMeshRenderDistance.cpp
-        src/ChunkMeshRenderDistance.h
+        src/World.cpp
+        src/World.h
 )
 
 include(cmake/Libraries.cmake)

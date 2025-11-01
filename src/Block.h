@@ -3,12 +3,17 @@
 //
 
 #pragma once
+#include "Block.h"
+#include "Block.h"
+#include "Block.h"
+#include "Block.h"
 #include "ChunkMeshDataStruct.h"
 #include "glm/vec3.hpp"
 
 
 
 class Chunk;
+class World;
 class Block {
     glm::ivec3 position;
     bool air;
@@ -22,4 +27,6 @@ public:
     }
     void appendFacesVerticesAndIndices(glMeshData &to, glm::uvec3 direction);
     void generateFaces( glMeshData & data, Chunk * chunk);
+
+    bool generateFacesBetweenChunks(glMeshData &to, glm::ivec3 direction, World *world);
 };

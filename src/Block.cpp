@@ -3,6 +3,7 @@
 //
 
 #include "Block.h"
+#include "World.h"
 #include "Chunk.h"
 #include "glm/vec2.hpp"
 #include <Eigen/Dense>
@@ -92,8 +93,31 @@ void Block::generateFaces( glMeshData & data, Chunk * chunk) {
     };
     for (auto offset: offsets) {
         glm::uvec3 pos = position - chunk->getChunkPositionOffset() + offset;
-        if (!chunk->blockAt(pos)) {
+        if (
+            pos.y >= Chunk::DIMENSIONS.y||
+            pos.x >= Chunk::DIMENSIONS.x||
+            pos.z >= Chunk::DIMENSIONS.z||
+            pos.x < 0||
+            pos.y < 0||
+            pos.z < 0
+            ) {continue; }
+        const Block& block = chunk->blockAt(pos);
+        bool fill = false;
+        fill = block.isAir();
+        if (fill) {
             appendFacesVerticesAndIndices(data, offset);
         }
     }
+}
+
+bool Block::generateFacesBetweenChunks(glMeshData &to, glm::ivec3 direction, World *world) {
+    Block* block = world->getBlockAt(position + direction);
+    if (block == nullptr) {
+        return false;
+    }
+    if (!block->isAir()) {
+        return false;
+    }
+    appendFacesVerticesAndIndices(to, direction);
+    return true;
 }

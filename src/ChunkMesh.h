@@ -10,15 +10,13 @@
 
 class ChunkMesh {
 
-public:
-    Chunk chunk;
 private:
     unsigned int VBO;
     unsigned int VAO;
     unsigned int EBO;
     int numberOfIndices;
 public:
-    ChunkMesh(glm::ivec2 chunkPosition);
+    ChunkMesh(const Chunk & chunk);
     void draw()const;
     ~ChunkMesh();
 
