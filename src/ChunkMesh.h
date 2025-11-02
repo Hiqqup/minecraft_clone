@@ -11,12 +11,12 @@
 class ChunkMesh {
 
 private:
-    unsigned int VBO;
     unsigned int VAO;
+    unsigned int VBO;
     unsigned int EBO;
     int numberOfIndices;
 public:
-    ChunkMesh(const Chunk & chunk);
+    explicit ChunkMesh(const Chunk & chunk);
     void draw()const;
     ~ChunkMesh();
 

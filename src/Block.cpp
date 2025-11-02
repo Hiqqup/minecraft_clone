@@ -47,15 +47,15 @@ constexpr float textureDim[6] = {
 };
 
 
-void Block::appendFacesVerticesAndIndices(glMeshData &to, glm::uvec3 direction) {
+void Block::appendFacesVerticesAndIndices(glMeshData &to, glm::ivec3 direction) const {
     // Map direction to face index (0..5)
     int faceIndex = -1;
-    if (direction == glm::uvec3( 0, 0, 1)) faceIndex = 0; // front
-    if (direction == glm::uvec3( 0, 0,-1)) faceIndex = 1; // back
-    if (direction == glm::uvec3(-1, 0, 0)) faceIndex = 2; // left
-    if (direction == glm::uvec3( 1, 0, 0)) faceIndex = 3; // right
-    if (direction == glm::uvec3( 0, 1, 0)) faceIndex = 4; // top
-    if (direction == glm::uvec3( 0,-1, 0)) faceIndex = 5; // bottom
+    if (direction == glm::ivec3( 0, 0, 1)) faceIndex = 0; // front
+    if (direction == glm::ivec3( 0, 0,-1)) faceIndex = 1; // back
+    if (direction == glm::ivec3(-1, 0, 0)) faceIndex = 2; // left
+    if (direction == glm::ivec3( 1, 0, 0)) faceIndex = 3; // right
+    if (direction == glm::ivec3( 0, 1, 0)) faceIndex = 4; // top
+    if (direction == glm::ivec3( 0,-1, 0)) faceIndex = 5; // bottom
 
     if (faceIndex == -1) return;
 
@@ -79,7 +79,7 @@ void Block::appendFacesVerticesAndIndices(glMeshData &to, glm::uvec3 direction) 
     to.index += 4;
 }
 
-void Block::generateFaces( glMeshData & data, Chunk * chunk) {
+void Block::generateFaces( glMeshData & data, Chunk * chunk) const {
     if (air) {
         return;
     }
@@ -92,7 +92,7 @@ void Block::generateFaces( glMeshData & data, Chunk * chunk) {
         {0,0,-1},
     };
     for (auto offset: offsets) {
-        glm::uvec3 pos = position - chunk->getChunkPositionOffset() + offset;
+        glm::ivec3 pos = position - chunk->getChunkPositionOffset() + offset;
         if (
             pos.y >= Chunk::DIMENSIONS.y||
             pos.x >= Chunk::DIMENSIONS.x||
@@ -110,8 +110,8 @@ void Block::generateFaces( glMeshData & data, Chunk * chunk) {
     }
 }
 
-bool Block::generateFacesBetweenChunks(glMeshData &to, glm::ivec3 direction, World *world) {
-    Block* block = world->getBlockAt(position + direction);
+bool Block::generateFacesBetweenChunks(glMeshData &to, const glm::ivec3 &direction, World *world) const {
+    const Block* block = world->getBlockAt(position + direction);
     if (block == nullptr) {
         return false;
     }

@@ -4,54 +4,70 @@
 
 #include "World.h"
 
-World::World() {
-    for (int x = 0; x < RENDER_DISTANCE.x; x++) {
-        for (int y = 0; y < RENDER_DISTANCE.y; y++) {
-            chunks[x][y] = new Chunk(glm::ivec2{x,y});
-        }
-    }
+#include <cmath>
+#include <iostream>
+#include <ranges>
 
-    for (int x = 0; x < RENDER_DISTANCE.x; x++) {
-        for (int y = 0; y < RENDER_DISTANCE.y; y++) {
-            chunks[x][y]->patchUpBorders(this);
-        }
-    }
-    for (int x = 0; x < RENDER_DISTANCE.x; x++) {
-        for (int y = 0; y < RENDER_DISTANCE.y; y++) {
-            meshes[x][y] = new ChunkMesh(*chunks[x][y]);
-        }
-    }
-}//
+
 Block * World::getBlockAt(glm::ivec3 position) {
-    if (position.x < 0 || position.z < 0||
-        position.x >= RENDER_DISTANCE.x * Chunk::DIMENSIONS.x||
-        position.z >= RENDER_DISTANCE.y * Chunk::DIMENSIONS.z
-        ) {
+    glm::ivec2 chunkIndex = {
+    std::floor(static_cast<float>(position.x) /static_cast<float>( Chunk::DIMENSIONS.x)),
+        std::floor(static_cast<float>(position.z)/static_cast<float>( Chunk::DIMENSIONS.z))
+    };
+    if (!chunks.contains(chunkIndex)) {
         return nullptr;
     }
-    glm::ivec2 chunkIndex = {
-        (static_cast<float>(position.x) /static_cast<float> (Chunk::DIMENSIONS.x)),
-        (static_cast<float>(position.z)/ static_cast<float>(Chunk::DIMENSIONS.z))
-    };
-    glm::ivec3 inChunkPosition =glm::ivec3(position) -glm::ivec3(
+    const glm::ivec3 inChunkPosition =glm::ivec3(position) -glm::ivec3(
         chunkIndex.x * Chunk::DIMENSIONS.x,0, chunkIndex.y*Chunk::DIMENSIONS.z ) ;
 
-    return &chunks[chunkIndex.x][chunkIndex.y]->blockAt(inChunkPosition);
+    return &chunks[{chunkIndex.x,chunkIndex.y}]->blockAt(inChunkPosition);
 }
 
 void World::draw() const {
-    for (int x = 0; x < RENDER_DISTANCE.x; x++) {
-        for (int y = 0; y < RENDER_DISTANCE.y; y++) {
-            meshes[x][y]->draw();
-        }
+    for (const auto &key: chunks | std::views::keys) {
+        meshes.at(key)->draw();
     }
 }
 
 World::~World() {
-    for (int x = 0; x < RENDER_DISTANCE.x; x++) {
-        for (int y = 0; y < RENDER_DISTANCE.y; y++) {
-            delete chunks[x][y];
-            delete meshes[x][y];
+    for (const auto &key: chunks | std::views::keys) {
+            delete chunks[key];
+            delete meshes[key];
+    }
+}
+
+void World::updatePlayerPositionRenderNewChunks(glm::ivec2 playerPosition) {
+     const glm::ivec2 newPlayerChunkIndex = {
+    std::floor(static_cast<float>(playerPosition.x) /static_cast<float>( Chunk::DIMENSIONS.x)),
+        std::floor(static_cast<float>(playerPosition.y)/static_cast<float>( Chunk::DIMENSIONS.z))
+    };
+    for (int renderDistanceOffsetX = -RENDER_DISTANCE.x; renderDistanceOffsetX <= RENDER_DISTANCE.x; ++renderDistanceOffsetX) {
+        for (int renderDistanceOffsetY = -RENDER_DISTANCE.y; renderDistanceOffsetY <= RENDER_DISTANCE.y; ++renderDistanceOffsetY) {
+            glm::ivec2 renderDistanceOffset = {renderDistanceOffsetX, renderDistanceOffsetY};
+            renderNewChunk(newPlayerChunkIndex + renderDistanceOffset);
         }
     }
+}
+
+void World::renderNewChunk(glm::ivec2 index) {
+    if (chunks.contains(index)) {
+        return;
+    }
+    chunks[index] = new Chunk(index);
+    chunks[index]->patchUpBorders(this,index);
+    glm::ivec2 neighbors[4] = {
+        {1,0},
+        {-1,0},
+        {0, 1,},
+        {0,-1},
+    };
+     for (const auto &neighbor: neighbors) {
+         if (!chunks.contains(index+ neighbor)) {
+             continue;
+         }
+         chunks[index +neighbor]->patchUpBorders(this, neighbor);
+         delete meshes[index +neighbor];
+         meshes[index +neighbor] = new ChunkMesh(*chunks[index + neighbor]);
+     }
+    meshes[index] = new ChunkMesh(*chunks[index]);
 }

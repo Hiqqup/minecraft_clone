@@ -56,7 +56,6 @@ int main() {
     stbi_image_free(data);
     auto  shader = std::make_optional<Shader>("shaders/triangle.vert", "shaders/triangle.frag");
     shader->use();
-    //auto mesh = std::make_optional<ChunkMesh>(glm::ivec2{0,0});
     auto meshes = std::make_optional<World>();
     Camera camera;
 
@@ -71,6 +70,7 @@ int main() {
         shader->setInt("ourTexture", 0);
 
         camera.processInput(window);
+        meshes->updatePlayerPositionRenderNewChunks( glm::ivec2(camera.position.x, camera.position.z));
         shader->setMatrix("mvp", calculateMvpMatrix(camera)) ;
         meshes->draw();
         glfwSwapBuffers(window);

@@ -7,8 +7,14 @@
 #define STB_PERLIN_IMPLEMENTATION
 #include <stb_perlin.h>
 
-Block &Chunk::blockAt(glm::uvec3 pos) {
-    return blocks[pos.x][pos.y][pos.z];
+int blockArray3to1d(const int x, const int y,const int z) {
+    return x * (Chunk::DIMENSIONS.y * Chunk::DIMENSIONS.z) + y * Chunk::DIMENSIONS.z + z;
+}
+int heightMapArray2to1d(const int x, const int z) {
+    return x *  Chunk::DIMENSIONS.z + z;
+}
+Block &Chunk::blockAt(glm::ivec3 pos) {
+    return blocks[blockArray3to1d(pos.x,pos.y,pos.z)];
 }
 Chunk::Chunk(const glm::ivec2 & chunkPositionUnscaled):
     chunkPositionOffset ( glm::ivec3(chunkPositionUnscaled.x * DIMENSIONS.x, 0 ,chunkPositionUnscaled.y* DIMENSIONS.z))
@@ -18,30 +24,33 @@ Chunk::Chunk(const glm::ivec2 & chunkPositionUnscaled):
         for (int z = 0; z < DIMENSIONS.z; z++) {
             constexpr float scale = 0.1;
             float perlin = stb_perlin_noise3(
-                (x+chunkPositionOffset.x)* scale,(z+chunkPositionOffset.z)*scale, 0,0,0,0);
+                static_cast<float>(x+chunkPositionOffset.x)* scale,
+                static_cast<float>(z+chunkPositionOffset.z)*scale,
+                //0,
+                0,0,0,0);
             float perlinNormalized = (perlin + 1.0f ) * 0.5f;
             //perlinNormalized   = 0;
-            heightMap[x][z] = 30 +static_cast<int>( perlinNormalized * 20);
+            heightMap[heightMapArray2to1d(x,z)] = 30 +static_cast<int>( perlinNormalized * 20);
         }
     }
 
     for (int x = 0; x < DIMENSIONS.x; x++) {
         for (int y = 0; y < DIMENSIONS.y; y++) {
             for (int z = 0; z < DIMENSIONS.z; z++) {
-                blocks[x][y][z].setProps(glm::ivec3(x, y, z) + chunkPositionOffset, y > heightMap[x][z]);
+                blocks[blockArray3to1d(x,y,z)].setProps(glm::ivec3(x, y, z) + chunkPositionOffset, y > heightMap[heightMapArray2to1d(x,z)]);
             }
         }
     }
     for (int x = 0; x < DIMENSIONS.x; x++) {
         for (int y = 0; y < DIMENSIONS.y; y++) {
             for (int z = 0; z < DIMENSIONS.z; z++) {
-                blocks[x][y][z].generateFaces(data, this);
+                blocks[blockArray3to1d(x,y,z)].generateFaces(data, this);
             }
         }
     }
 }
 
-void Chunk::patchUpBorders(World *world) {
+void Chunk::patchUpBorders(World *world, glm::ivec2 chunkIndex) {
   struct Border {
         glm::ivec3 start;     // starting coordinate (x, y placeholder, z)
         glm::ivec3 step;      // which axis to iterate along
@@ -58,11 +67,15 @@ void Chunk::patchUpBorders(World *world) {
 
     for (const auto& border : borders) {
         glm::ivec3 pos = border.start;
+        if (!world->chunks.contains(chunkIndex + glm::ivec2(border.direction.x,border. direction.z))) {
+            continue;
+        }
+
         for (unsigned int i = 0; i < border.length; i++) {
-            int y = heightMap[pos.x][pos.z];
+            int y = static_cast<int>(heightMap[heightMapArray2to1d( pos.x,pos.z)]);
             bool propergateDown = true;
             while (propergateDown) {
-                propergateDown = blocks[pos.x][y][pos.z].generateFacesBetweenChunks(
+                propergateDown = blocks[blockArray3to1d(pos.x,y,pos.z)].generateFacesBetweenChunks(
                     data, border.direction, world);
                 y -= 1;
                 if (y<0) {

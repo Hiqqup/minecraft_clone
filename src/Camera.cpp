@@ -4,9 +4,9 @@
 
 #include "Camera.h"
   glm::vec2 Camera::getMousePosition(GLFWwindow* window) {
-    double xpos, ypos;
-    glfwGetCursorPos(window, &xpos, &ypos);
-    return {xpos, ypos};
+    double xPos, yPos;
+    glfwGetCursorPos(window, &xPos, &yPos);
+    return {xPos, yPos};
 }
 
  glm::vec2 Camera::getDeltaMousePosition(GLFWwindow *window) {
@@ -50,9 +50,9 @@ void Camera::processInput(GLFWwindow* window) {
         pitch = -89.0f;
 
     glm::vec3 direction;
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.x = static_cast<float>(cos(glm::radians(yaw)) * cos(glm::radians(pitch)));
+    direction.y = static_cast<float>(sin(glm::radians(pitch)));
+    direction.z = static_cast<float>(sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
     front = glm::normalize(direction);
 
 }

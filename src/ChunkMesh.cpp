@@ -5,12 +5,9 @@
 #include "ChunkMesh.h"
 
 #include <cstring>
-#include <random>
-#include <bits/fs_fwd.h>
 #include <glad/glad.h>
 
 #include "Chunk.h"
-#include "glm/vec3.hpp"
 #include "glm/detail/func_packing_simd.inl"
 
 
@@ -28,19 +25,19 @@ ChunkMesh::ChunkMesh(const Chunk & chunk):
     VAO(),
     VBO (createBuffer( GL_ARRAY_BUFFER,chunk.data.vertices)),
     EBO ((createBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.data.indices))),
-    numberOfIndices(chunk.data.indices.size())
+    numberOfIndices(static_cast<int>(chunk.data.indices.size()))
 {
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),nullptr);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)( 3* sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)( 5* sizeof(float)));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void *>(5 * sizeof(float)));
     glEnableVertexAttribArray(2);
 }
 
